@@ -365,66 +365,113 @@ object IO {
   def gunzip(input: InputStream, output: OutputStream): Unit =
     gzipInputStream(input)(gzStream => transfer(gzStream, output))
 
+  // for binary compatibility
+  @deprecated(message = "use another overload", since = "1.3.0-M14")
+  private[io] def unzip(
+      from: File,
+      toDirectory: File,
+      filter: NameFilter,
+      preserveLastModified: Boolean,
+  ): Set[File] =
+    unzip(from, toDirectory, filter, preserveLastModified, None)
+
   def unzip(
       from: File,
       toDirectory: File,
       filter: NameFilter = AllPassFilter,
-      preserveLastModified: Boolean = true
+      preserveLastModified: Boolean = true,
+      limit: Option[Long] = None
   ): Set[File] =
-    fileInputStream(from)(in => unzipStream(in, toDirectory, filter, preserveLastModified))
+    fileInputStream(from)(in => unzipStream(in, toDirectory, filter, preserveLastModified, limit))
+
+  // for binary compatibility
+  @deprecated(message = "use another overload", since = "1.3.0-M14")
+  private[io] def unzipURL(
+      from: URL,
+      toDirectory: File,
+      filter: NameFilter,
+      preserveLastModified: Boolean
+  ): Set[File] =
+    unzipURL(from, toDirectory, filter, preserveLastModified, None)
 
   def unzipURL(
       from: URL,
       toDirectory: File,
       filter: NameFilter = AllPassFilter,
-      preserveLastModified: Boolean = true
+      preserveLastModified: Boolean = true,
+      limit: Option[Long] = None
   ): Set[File] =
-    urlInputStream(from)(in => unzipStream(in, toDirectory, filter, preserveLastModified))
+    urlInputStream(from)(in => unzipStream(in, toDirectory, filter, preserveLastModified, limit))
+
+  // for binary compatibility
+  @deprecated(message = "use another overload", since = "1.3.0-M14")
+  private[io] def unzipStream(
+      from: InputStream,
+      toDirectory: File,
+      filter: NameFilter,
+      preserveLastModified: Boolean
+  ): Set[File] =
+    unzipStream(from, toDirectory, filter, preserveLastModified, None)
 
   def unzipStream(
       from: InputStream,
       toDirectory: File,
       filter: NameFilter = AllPassFilter,
-      preserveLastModified: Boolean = true
+      preserveLastModified: Boolean = true,
+      limit: Option[Long] = None
   ): Set[File] = {
     createDirectory(toDirectory)
     zipInputStream(from)(zipInput => extract(zipInput, toDirectory, filter, preserveLastModified))
   }
 
-  private def extract(
+  private[this] def extract(
       from: ZipInputStream,
       toDirectory: File,
       filter: NameFilter,
-      preserveLastModified: Boolean
+      preserveLastModified: Boolean,
+      limit: Option[Long] = None
   ) = {
     val set = new HashSet[File]
-    @tailrec def next(): Unit = {
+    @tailrec def next(total: Long): Unit = {
       val entry = from.getNextEntry
       if (entry == null)
         ()
       else {
         val name = entry.getName
-        if (filter.accept(name)) {
+        val fileSize = if (filter.accept(name)) {
           val target = new File(toDirectory, name)
           //log.debug("Extracting zip entry '" + name + "' to '" + target + "'")
-          if (entry.isDirectory)
+          val s = if (entry.isDirectory) {
             createDirectory(target)
-          else {
+            0L
+          } else {
             set += target
             translate("Error extracting zip entry '" + name + "' to '" + target + "': ") {
               fileOutputStream(false)(target)(out => transfer(from, out))
             }
+            val size = target.length()
+            limit match {
+              case Some(l) =>
+                if (total + size > l) {
+                  throw new IllegalArgumentException("zip bomb!?")
+                }
+              case _ =>
+            }
+            size
           }
           if (preserveLastModified)
             setModifiedTimeOrFalse(target, entry.getTime)
+
+          s
         } else {
           //log.debug("Ignoring zip entry '" + name + "'")
+          0L
         }
         from.closeEntry()
-        next()
+        next(fileSize + total)
       }
     }
-    next()
+    next(0)
     Set() ++ set
   }
 
