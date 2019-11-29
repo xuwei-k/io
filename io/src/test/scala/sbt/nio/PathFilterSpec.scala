@@ -12,10 +12,10 @@ package sbt.nio
 
 import java.nio.file.{ Files, Path }
 
-import org.scalatest.FlatSpec
 import sbt.io.IO
 import sbt.nio.file._
 import sbt.nio.file.syntax._
+import org.scalatest.flatspec.AnyFlatSpec
 
 object PathFilterSpec {
   implicit class PathFilterOps(val pathFilter: PathFilter) extends AnyVal {
@@ -31,7 +31,7 @@ object PathFilterSpec {
   }
 }
 import sbt.nio.PathFilterSpec._
-class PathFilterSpec extends FlatSpec {
+class PathFilterSpec extends AnyFlatSpec {
   "PathFilters" should "accept files" in IO.withTemporaryDirectory { dir =>
     val dirPath = dir.toPath
     val foo = Files.createFile(dirPath / "foo")

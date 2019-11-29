@@ -13,8 +13,10 @@ package sbt.io
 import org.scalatest._
 import sbt.io.syntax._
 import java.nio.file.attribute.PosixFilePermission
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class FileSpec extends FlatSpec with Matchers {
+class FileSpec extends AnyFlatSpec with Matchers {
   "files" should "set/unset permissions" in {
     IO.withTemporaryDirectory { dir =>
       val t1 = dir / "foo.txt"

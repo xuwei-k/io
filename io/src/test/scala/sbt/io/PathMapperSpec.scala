@@ -15,8 +15,10 @@ import java.nio.file.{ Files, Path => NioPath }
 import org.scalatest._
 import Path._
 import sbt.io.syntax._
+import org.scalatest.flatspec
+import org.scalatest.matchers.should.Matchers
 
-class PathMapperSpec extends fixture.FlatSpec with Matchers {
+class PathMapperSpec extends flatspec.FixtureAnyFlatSpec with Matchers {
 
   type FixtureParam = NioPath
 

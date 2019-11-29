@@ -13,7 +13,6 @@ package sbt.internal.io
 import java.io.IOException
 import java.nio.file.{ ClosedWatchServiceException, Files, Path, Paths }
 
-import org.scalatest.{ FlatSpec, Matchers }
 import sbt.internal.io.EventMonitorSpec._
 import sbt.internal.nio.FileEvent.Deletion
 import sbt.internal.nio.{ Deadline => _, _ }
@@ -25,8 +24,10 @@ import sbt.nio.file.{ FileAttributes, Glob, RecursiveGlob }
 import scala.annotation.tailrec
 import scala.concurrent.duration._
 import scala.util.{ Success, Try }
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-private[sbt] trait EventMonitorSpec { self: FlatSpec with Matchers =>
+private[sbt] trait EventMonitorSpec { self: AnyFlatSpec with Matchers =>
   def pollDelay: FiniteDuration
   def newObservable(glob: Seq[Glob], logger: Logger): Observable[Event]
   def newObservable(file: File): Observable[Event] =
@@ -590,7 +591,7 @@ object EventMonitorSpec {
   }
 }
 
-private[sbt] trait RepoEventMonitorSpec extends FlatSpec with Matchers with EventMonitorSpec {
+private[sbt] trait RepoEventMonitorSpec extends AnyFlatSpec with Matchers with EventMonitorSpec {
   val converter: (Path, FileAttributes) => Try[Unit] =
     (_: Path, _: FileAttributes) => Success(())
   private[sbt] def factory(): FileTreeRepository[FileAttributes]
@@ -623,7 +624,7 @@ class LegacyFileTreeRepositoryEventMonitorSpec extends RepoEventMonitorSpec {
 private[sbt] abstract class SourceModificationWatchSpec(
     getServiceWithPollDelay: FiniteDuration => WatchService,
     override val pollDelay: FiniteDuration
-) extends FlatSpec
+) extends AnyFlatSpec
     with Matchers
     with EventMonitorSpec {
   def getService: WatchService = getServiceWithPollDelay(pollDelay)

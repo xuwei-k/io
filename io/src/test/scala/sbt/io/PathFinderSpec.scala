@@ -13,9 +13,10 @@ package sbt.io
 import java.io.File
 import java.nio.file.Files
 
-import org.scalatest.{ FlatSpec, Matchers }
 
 import scala.collection.mutable
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 object PathFinderSpec {
   implicit class FileOps(val file: File) extends AnyVal {
@@ -23,7 +24,7 @@ object PathFinderSpec {
       PathFinder(file).globRecursive(AllPassFilter, handler).get()
   }
 }
-trait PathFinderSpec extends FlatSpec with Matchers {
+trait PathFinderSpec extends AnyFlatSpec with Matchers {
   import PathFinderSpec._
   implicit def handler: (File, FileFilter, mutable.Set[File]) => Unit
   "PathFinder" should "find the files in a directory" in IO.withTemporaryDirectory { dir =>

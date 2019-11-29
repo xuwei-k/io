@@ -14,7 +14,6 @@ import java.nio.file._
 import java.nio.file.attribute.FileTime
 import java.util.concurrent.{ ConcurrentHashMap, CountDownLatch, TimeUnit }
 
-import org.scalatest.{ FlatSpec, Matchers }
 import sbt.internal.nio.FileEvent.{ Creation, Deletion }
 import sbt.io.IO
 import sbt.nio.file.syntax.pathToPathOps
@@ -22,6 +21,8 @@ import sbt.nio.file.{ AnyPath, FileAttributes, Glob, RecursiveGlob }
 
 import scala.collection.JavaConverters._
 import scala.concurrent.duration._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 object FileTreeRepositorySpec {
   implicit class FileRepositoryOps[T](val fileCache: FileTreeRepository[FileAttributes])
@@ -67,7 +68,7 @@ object FileTreeRepositorySpec {
   }
   case class LastModified(at: Long)
 }
-class FileTreeRepositorySpec extends FlatSpec with Matchers {
+class FileTreeRepositorySpec extends AnyFlatSpec with Matchers {
   import FileTreeRepositorySpec._
   "register" should "see existing files" in withTempFile { file =>
     using(simpleCache((_: Path) => {})) { c =>

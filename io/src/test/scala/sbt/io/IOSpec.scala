@@ -12,10 +12,10 @@ package sbt.io
 
 import java.io.File
 import java.nio.file.Files
-import org.scalatest.FunSuite
 import sbt.io.syntax._
+import org.scalatest.funsuite.AnyFunSuite
 
-class IOSpec extends FunSuite {
+class IOSpec extends AnyFunSuite {
 
   test("IO should relativize") {
     // Given:

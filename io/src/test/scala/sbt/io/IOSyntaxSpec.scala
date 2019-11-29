@@ -13,8 +13,10 @@ package sbt.io
 import java.io.{ File => JFile }
 import org.scalatest._
 import sbt.io.syntax._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class IOSyntaxSpec extends FlatSpec with Matchers {
+class IOSyntaxSpec extends AnyFlatSpec with Matchers {
   "file(...)" should "create File" in {
     file(".") shouldBe (new JFile("."))
   }
