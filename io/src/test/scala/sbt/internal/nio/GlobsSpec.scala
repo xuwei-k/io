@@ -17,7 +17,7 @@ import org.scalatest.FlatSpec
 import sbt.io._
 import sbt.nio.TestHelpers._
 import sbt.nio.file.RelativeGlob.{ Matcher, NoPath }
-import sbt.nio.file.{ **, AnyPath, Glob }
+import sbt.nio.file._
 
 class GlobsSpec extends FlatSpec {
 

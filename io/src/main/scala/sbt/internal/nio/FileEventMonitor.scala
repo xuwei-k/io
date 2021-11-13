@@ -239,7 +239,7 @@ private[sbt] object FileEventMonitor {
       val waits = quarantinedEvents.map(_._2.occurredAt + quarantinePeriod - now).toVector
       if (waits.isEmpty) None else Some(waits.min)
     }
-    @tailrec
+
     override final def poll(
         duration: Duration,
         filter: FileEvent[T] => Boolean
@@ -292,7 +292,7 @@ private[sbt] object FileEventMonitor {
           quarantinedEvents.remove(path)
           antiEntropyDeadlines.put(path, event.occurredAt + period)
           logger.debug(s"Triggering event for previously quarantined deleted file: $path")
-          event
+          event: FileEvent[T]
       }
       // Keep old anti entropy events around for a while in case there are still unhandled
       // events that occurred between polls. This is necessary because there is no background

@@ -20,6 +20,7 @@ import sbt.internal.nio._
 import sbt.io._
 import sbt.io.syntax._
 import sbt.nio.file.{ AnyPath, FileAttributes, FileTreeView, Glob, RecursiveGlob }
+import sbt.nio.file.Glob.GlobOps
 
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
@@ -115,7 +116,7 @@ private[sbt] final class WatchState private (
 
   /** Retrieve events from the `WatchService` */
   private[sbt] def pollEvents(): Iterable[(Path, WatchEvent[_])] = {
-    val events = service.pollEvents
+    val events = service.pollEvents()
     events.toIterable.flatMap {
       case (k, evs) => evs.map((k.watchable().asInstanceOf[Path], _))
     }

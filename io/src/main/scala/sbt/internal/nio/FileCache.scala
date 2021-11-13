@@ -18,6 +18,7 @@ import java.util.concurrent.{ ConcurrentHashMap, ConcurrentSkipListMap }
 import sbt.internal.nio.FileEvent.{ Creation, Deletion, Update }
 import sbt.nio.file.FileAttributes.NonExistent
 import sbt.nio.file.{ AnyPath, FileAttributes, FileTreeView, Glob, RecursiveGlob }
+import sbt.nio.file.Glob.GlobOps
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
